@@ -5,7 +5,7 @@ ARG GO_VERSION="1.19"
 #--------------------------------------------#
 
 # Stage 1: Build KSOPS and Kustomize
-FROM golang:$GO_VERSION AS builder
+FROM registry.access.redhat.com/ubi8/go-toolset:${GO_VERSION}-8 AS builder
 
 ARG TARGETPLATFORM
 ARG PKG_NAME=ksops
@@ -29,14 +29,13 @@ RUN make install
 RUN make kustomize
 
 # # Stage 2: Final image
-FROM debian:bullseye-slim
+FROM registry.access.redhat.com/ubi9/ubi-minimal
 
 LABEL org.opencontainers.image.source="https://github.com/viaduct-ai/kustomize-sops"
 
 # ca-certs and git could be required if kustomize remote-refs are used
-RUN apt update -y \
-    && apt install -y git ca-certificates \
-    && apt clean -y && rm -rf /var/lib/apt/lists/*
+RUN microdnf install -y git ca-certificates && \
+    microdnf clean all
 
 # Copy only necessary files from the builder stage
 COPY --from=builder /go/bin/ksops /usr/local/bin/ksops
