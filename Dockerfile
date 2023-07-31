@@ -5,7 +5,7 @@ ARG GO_VERSION="1.19"
 #--------------------------------------------#
 
 # Stage 1: Build KSOPS and Kustomize
-FROM registry.access.redhat.com/ubi8/go-toolset:${GO_VERSION}-8 AS builder
+FROM registry.access.redhat.com/ubi8/go-toolset:${GO_VERSION} AS builder
 
 ARG TARGETPLATFORM
 ARG PKG_NAME=ksops
